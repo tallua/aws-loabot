@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(aws-loabot-router)
+
+find_package(aws-lambda-runtime)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-
+target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime)
+target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
+target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)

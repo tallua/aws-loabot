@@ -1,10 +1,17 @@
 #include <iostream>
 
-using namespace std;
+#include <aws/lambda-runtime/runtime.h>
 
-int main(int argc, char** argv)
+using namespace std;
+using namespace aws::lambda_runtime;
+
+int main(int, char**)
 {
-    cout << "Hello, World!!!" << endl;
+    cout << "new lambda launched" << endl;
+
+    aws::lambda_runtime::run_handler([](auto&&) {
+        return invocation_response::failure("Not Implemented", "500");
+    });
 
     return 0;
 }
