@@ -17,3 +17,6 @@ RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git \
     && mkdir build && cd build \
     && cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_ONLY="s3;lambda;secretsmanager" -DCPP_STANDARD=17 -DENABLE_UNITY_BUILD=ON \
     && make && make install
+
+RUN apt-get install -y nodejs npm \
+    && npm install -g aws-cdk typescript
