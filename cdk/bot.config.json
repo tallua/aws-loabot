@@ -1,0 +1,10 @@
+{
+    "secret": {
+        "password": "your.secret.password"
+    },
+    "discord": {
+        "appid": "your.app.id",
+        "appkey": "your.app.key",
+        "token": "your.bot.token"
+    }
+}
