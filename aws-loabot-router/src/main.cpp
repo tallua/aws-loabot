@@ -1,6 +1,3 @@
-#include <iostream>
-#include <string>
-
 #include <aws/lambda-runtime/runtime.h>
 
 #include <aws/core/Aws.h>
@@ -13,36 +10,7 @@
 
 using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
-
-namespace {
-
-template <typename _Tp>
-void tlog(_Tp&& arg) { std::cout << arg; }
-
-template <typename _First, typename... _Rest>
-void tlog(_First&& first, _Rest&&... rest)
-{
-    std::cout << first;
-    tlog(std::forward<_Rest>(rest)...);
-}
-
-template <typename..._Args>
-void LOG(_Args&&... args)
-{
-    tlog(std::forward<_Args>(args)...);
-    std::cout << std::endl;
-}
-
-}
-
-namespace discord {
-
-enum class RequestType {
-    Ping = 1,
-    Command = 2
-};
-
-}
+using namespace loabot::log;
 
 int main(int, char**)
 {
