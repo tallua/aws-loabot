@@ -7,16 +7,21 @@
 #include "discord/message.hpp"
 
 #include "loabot/log.hpp"
+#include "loabot/router.hpp"
 
 using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
 using namespace loabot::log;
+using namespace loabot::route;
 
 int main(int, char**)
 {
     Aws::InitAPI(Aws::SDKOptions());
 
-    run_handler([](const invocation_request& req) {
+    auto builder = LoabotRouterBuilder();
+    auto router = std::shared_ptr<Router>(builder.build());
+
+    run_handler([router](const invocation_request& req) {
         LOG(req.payload);
         const auto payload = JsonValue(req.payload);
 
@@ -32,12 +37,18 @@ int main(int, char**)
 
         switch(discord::RequestType(message_type))
         {
-        case discord::RequestType::Ping:
-            return invocation_response::success(
-                discord::ResponseBuilder::Ping().View().WriteCompact(), "application/json");
-        case discord::RequestType::Command:
-            return invocation_response::failure("Not Implemented", "500");
+        case discord::RequestType::Ping: {
+            auto resp = discord::ResponseBuilder::Ping().to_string();
+            LOG(resp);
+            return invocation_response::success(resp, "application/json");
+        }
+        case discord::RequestType::Command: {
+            auto resp = router->route(body, {}).to_string();
+            LOG(resp);
+            return invocation_response::success(resp, "application/json");
+        }
         default:
+            LOG("Error: unknown message type");
             return invocation_response::failure("Unknown Message Type", "404");
         }
     });

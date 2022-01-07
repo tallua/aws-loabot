@@ -3,26 +3,41 @@
 using namespace discord;
 using namespace Aws::Utils::Json;
 
-JsonValue ResponseBuilder::Ping()
-{
-    return JsonValue(R"({
-        "statusCode": 200,
-        "isBase64Encoded": false,
-        "headers": {
-            "content-type": "application/json"
-        },
-        "body": "{\"type\": 1 }"
-    })");
+
+Response ResponseBuilder::Ping() {
+    return {JsonValue(R"({
+            "statusCode": 200,
+            "isBase64Encoded": false,
+            "headers": {
+                "content-type": "application/json"
+            },
+            "body": "{\"type\": 1 }"
+        })").View().WriteCompact()};
 }
 
-JsonValue ResponseBuilder::Pending()
-{
-    return JsonValue(R"({
+Response ResponseBuilder::Pending() {
+    return {JsonValue(R"({
+            "statusCode": 200,
+            "isBase64Encoded": false,
+            "headers": {
+                "content-type": "application/json"
+            },
+            "body": "{\"type\": 5 }"
+        })").View().WriteCompact()};
+}
+
+Response ResponseBuilder::Failed(const std::string& message) {
+    auto response = JsonValue(R"({
         "statusCode": 200,
         "isBase64Encoded": false,
         "headers": {
             "content-type": "application/json"
-        },
-        "body": "{\"type\": 5 }"
+        }
     })");
+
+    response.WithString("body",
+        JsonValue()
+            .WithInteger("type", 4)
+            .WithObject("data", JsonValue().WithString("content", message)).View().WriteCompact());
+    return { response.View().WriteCompact() };
 }

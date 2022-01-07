@@ -11,11 +11,18 @@ enum class RequestType {
     Command = 2
 };
 
+struct Response {
+    std::string message;
+
+    const std::string& to_string() const { return message; }
+};
+
 class ResponseBuilder
 {
 public:
-    static Aws::Utils::Json::JsonValue Ping();
-    static Aws::Utils::Json::JsonValue Pending();
+    static Response Ping();
+    static Response Pending();
+    static Response Failed(const std::string& message = "");
 };
 
 }
