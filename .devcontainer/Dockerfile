@@ -20,3 +20,7 @@ RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git \
 
 RUN apt-get install -y nodejs npm \
     && npm install -g aws-cdk typescript
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install

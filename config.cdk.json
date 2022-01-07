@@ -1,0 +1,16 @@
+{
+  "router": {
+    "path": [
+      "lostark",
+      "v2"
+    ],
+    "stage": {
+      "dev": {
+        "appid": "your.app.id",
+        "appkey": "your.app.key",
+        "token": "your.bot.token",
+        "route": ""
+      }
+    }
+  }
+}
