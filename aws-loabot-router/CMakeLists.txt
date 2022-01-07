@@ -14,8 +14,11 @@ FetchContent_Declare(Sodium
 FetchContent_MakeAvailable(Sodium)
 
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/validate.cpp)
 
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime ${AWSSDK_LINK_LIBRARIES} sodium)
 target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
 target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
