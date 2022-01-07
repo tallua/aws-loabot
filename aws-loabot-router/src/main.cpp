@@ -7,6 +7,9 @@
 #include <aws/core/utils/json/JsonSerializer.h>
 
 #include "discord/validate.hpp"
+#include "discord/message.hpp"
+
+#include "loabot/log.hpp"
 
 using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
@@ -45,7 +48,7 @@ int main(int, char**)
 {
     Aws::InitAPI(Aws::SDKOptions());
 
-    aws::lambda_runtime::run_handler([](const invocation_request& req) {
+    run_handler([](const invocation_request& req) {
         LOG(req.payload);
         const auto payload = JsonValue(req.payload);
 
@@ -62,23 +65,10 @@ int main(int, char**)
         switch(discord::RequestType(message_type))
         {
         case discord::RequestType::Ping:
-            return invocation_response::success(R"({
-                "statusCode": 200,
-                "isBase64Encoded": false,
-                "headers": {
-                    "content-type": "application/json"
-                },
-                "body": "{\"type\": 1 }"
-            })", "application/json");
+            return invocation_response::success(
+                discord::ResponseBuilder::Ping().View().WriteCompact(), "application/json");
         case discord::RequestType::Command:
-            return invocation_response::success(R"({
-                "statusCode": 200,
-                "isBase64Encoded": false,
-                "headers": {
-                    "content-type": "application/json"
-                },
-                "body": "{\"type\": 1 }"
-            })", "application/json");
+            return invocation_response::failure("Not Implemented", "500");
         default:
             return invocation_response::failure("Unknown Message Type", "404");
         }
