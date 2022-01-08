@@ -1,5 +1,7 @@
 #include "discord/message.hpp"
 
+#include <aws/core/utils/json/JsonSerializer.h>
+
 using namespace discord;
 using namespace Aws::Utils::Json;
 
@@ -27,6 +29,22 @@ Response ResponseBuilder::Pending() {
 }
 
 Response ResponseBuilder::Failed(const std::string& message) {
+    auto response = JsonValue(R"({
+        "statusCode": 200,
+        "isBase64Encoded": false,
+        "headers": {
+            "content-type": "application/json"
+        }
+    })");
+
+    response.WithString("body",
+        JsonValue()
+            .WithInteger("type", 4)
+            .WithObject("data", JsonValue().WithString("content", message)).View().WriteCompact());
+    return { response.View().WriteCompact() };
+}
+
+Response ResponseBuilder::Message(const std::string& message) {
     auto response = JsonValue(R"({
         "statusCode": 200,
         "isBase64Encoded": false,

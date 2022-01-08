@@ -5,6 +5,7 @@
 
 using namespace loabot::log;
 using namespace loabot::route;
+using namespace Aws::Utils::Json;
 
 void Router::add_handler(std::string command, RouteHandler handler)
 {
@@ -27,11 +28,3 @@ discord::Response Router::route(const JsonView body, const RouteContext& context
 
     return handler_it->second(body, context);
 }
-
-std::unique_ptr<Router> LoabotRouterBuilder::build()
-{
-    auto router = std::make_unique<Router>();
-
-    return router;
-}
-

@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <aws/core/utils/json/JsonSerializer.h>
-
 namespace discord {
 
 enum class RequestType {
@@ -23,6 +21,7 @@ public:
     static Response Ping();
     static Response Pending();
     static Response Failed(const std::string& message = "");
+    static Response Message(const std::string& message = "");
 };
 
 }
