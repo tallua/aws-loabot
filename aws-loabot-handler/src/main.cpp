@@ -33,10 +33,7 @@ int main(int, char**)
     run_handler([client](const invocation_request& req) {
         LOG(req.payload);
 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-
         const auto payload = JsonValue(req.payload);
-
 
         const auto response_url = payload.View().GetObject("callback").GetString("url");
         const auto response_auth = payload.View().GetObject("callback").GetString("Authorization");
@@ -44,13 +41,16 @@ int main(int, char**)
             return new std::stringstream();
         });
         discord_request->SetHeaderValue("Authorization", response_auth);
+        discord_request->SetAuthorization(response_auth);
         discord_request->SetContentType("application/json");
-        auto request_body = [] {
-            auto stream = std::make_shared<std::stringstream>();
-            *stream << discord::ResponseBuilder::Message("Yeah!").to_string();
+        const std::string test_data = R"({ "content": "Yeah!!!" })";
+        auto request_body = [&] {
+            LOG(test_data);
+            auto stream = std::make_shared<std::stringstream>(test_data);
             return stream;
         }();
         discord_request->AddContentBody(request_body);
+        discord_request->SetContentLength(std::to_string(test_data.size()));
 
         const auto discord_response = client->MakeRequest(discord_request);
         LOG("Response Code: ", int(discord_response->GetResponseCode()));
