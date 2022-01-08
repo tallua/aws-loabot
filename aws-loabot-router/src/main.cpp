@@ -43,7 +43,11 @@ int main(int, char**)
             return invocation_response::success(resp, "application/json");
         }
         case discord::RequestType::Command: {
-            auto resp = router->route(body, {}).to_string();
+            auto resp = router->route(body, {
+                payload.View().GetObject("stageVariables").GetString("DISCORD_APP_ID"),
+                payload.View().GetObject("stageVariables").GetString("DISCORD_BOT_TOKEN"),
+                payload.View().GetObject("stageVariables").GetString("DISCORD_ROUTE_TABLE_ARN")
+            }).to_string();
             LOG(resp);
             return invocation_response::success(resp, "application/json");
         }

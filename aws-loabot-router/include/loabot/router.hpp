@@ -11,7 +11,12 @@
 
 namespace loabot::route {
 
-struct RouteContext{};
+struct RouteContext
+{
+    std::string api_id;
+    std::string bot_token;
+    std::string handler_arn;
+};
 
 class Router {
 public:
