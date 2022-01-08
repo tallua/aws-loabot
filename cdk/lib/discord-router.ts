@@ -12,6 +12,7 @@ export interface RouterConfig {
       appid: string;
       appkey: string;
       token: string;
+      handler: string;
     }
   }
 };
@@ -44,6 +45,7 @@ export class DiscordRouter extends Stack {
           'DISCORD_APP_ID': stagevar.appid,
           'DISCORD_APP_KEY': stagevar.appkey,
           'DISCORD_BOT_TOKEN': stagevar.token,
+          'HANDLER_PREFIX': stagevar.handler,
           'STAGE_NAME': stage
         }
       });
