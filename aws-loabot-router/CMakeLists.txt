@@ -7,7 +7,7 @@ project(aws-loabot-router)
 include(FetchContent)
 
 find_package(aws-lambda-runtime)
-find_package(AWSSDK REQUIRED COMPONENTS secretsmanager)
+find_package(AWSSDK REQUIRED COMPONENTS lambda)
 FetchContent_Declare(Sodium
     GIT_REPOSITORY https://github.com/robinlinden/libsodium-cmake.git
 )

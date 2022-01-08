@@ -15,7 +15,8 @@ struct RouteContext
 {
     std::string api_id;
     std::string bot_token;
-    std::string handler_arn;
+    std::string handler_prefix;
+    std::string stage_name;
 };
 
 class Router {

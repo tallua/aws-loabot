@@ -2,6 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { LambdaIntegration, RestApi, Stage, Deployment } from 'aws-cdk-lib/aws-apigateway';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 export interface RouterConfig {
   name: string;
@@ -26,6 +27,16 @@ export class DiscordRouter extends Stack {
       handler: 'index.handler',
       code: Code.fromAsset(config.route_handler)
     });
+    router.role?.addManagedPolicy(new ManagedPolicy(this, `${id}ManagedPolicy`, {
+      description: `Allow to call lambda handler`,
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['lambda:InvokeFunction'],
+          resources: ['*']
+        })
+      ]
+    }));
 
     const gateway = new RestApi(this, `${id}GW`, {
       deploy: false

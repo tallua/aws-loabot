@@ -46,7 +46,8 @@ int main(int, char**)
             auto resp = router->route(body, {
                 payload.View().GetObject("stageVariables").GetString("DISCORD_APP_ID"),
                 payload.View().GetObject("stageVariables").GetString("DISCORD_BOT_TOKEN"),
-                payload.View().GetObject("stageVariables").GetString("DISCORD_ROUTE_TABLE_ARN")
+                payload.View().GetObject("stageVariables").GetString("HANDLER_PREFIX"),
+                payload.View().GetObject("stageVariables").GetString("STAGE_NAME")
             }).to_string();
             LOG(resp);
             return invocation_response::success(resp, "application/json");
