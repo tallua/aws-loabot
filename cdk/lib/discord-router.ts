@@ -4,13 +4,14 @@ import { LambdaIntegration, RestApi, Stage, Deployment } from 'aws-cdk-lib/aws-a
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 
 export interface RouterConfig {
+  name: string;
   path: string[];
+  route_handler: string;
   stage: {
     [id: string]: {
       appid: string;
       appkey: string;
       token: string;
-      callable: string;
     }
   }
 };
@@ -22,7 +23,7 @@ export class DiscordRouter extends Stack {
     const router = new Function(this, `${id}Router`, {
       runtime: Runtime.PROVIDED_AL2,
       handler: 'index.handler',
-      code: Code.fromAsset('../build/aws-loabot-router/aws-loabot-router.zip')
+      code: Code.fromAsset(config.route_handler)
     });
 
     const gateway = new RestApi(this, `${id}GW`, {
@@ -43,7 +44,7 @@ export class DiscordRouter extends Stack {
           'DISCORD_APP_ID': stagevar.appid,
           'DISCORD_APP_KEY': stagevar.appkey,
           'DISCORD_BOT_TOKEN': stagevar.token,
-          'DISCORD_ROUTE_TABLE_ARN': stagevar.callable
+          'STAGE_NAME': stage
         }
       });
     })
