@@ -47,11 +47,11 @@ void invoke_lambda(std::shared_ptr<LambdaClient> client, const std::string& name
 {
     InvokeRequest request;
     request.SetFunctionName(name);
-    request.SetInvocationType(InvocationType::RequestResponse);
+    request.SetInvocationType(InvocationType::Event);
     request.SetLogType(LogType::Tail);
     auto request_content = [&] {
         const auto app_id = body.GetString("application_id");
-        const auto interaction_token = body.GetString("id");
+        const auto interaction_token = body.GetString("token");
         auto stream = std::make_shared<Aws::StringStream>();
         auto new_payload = body.Materialize();
         new_payload.WithObject("callback", JsonValue()
@@ -108,7 +108,7 @@ std::unique_ptr<Router> LoabotRouterBuilder::build()
         const auto& lambda = handlers->find_handler("캐릭터", context);
         LOG("Invoking: ", lambda, " for 캐릭터");
         invoke_lambda(lambda_client, lambda, body, context);
-        return discord::ResponseBuilder::Failed("준비중이에요");
+        return discord::ResponseBuilder::Pending();
     });
     router->add_handler("핑", [](auto&&, auto&&) {
         return discord::ResponseBuilder::Message("퐁!");
