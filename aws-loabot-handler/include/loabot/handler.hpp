@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <aws/core/utils/json/JsonSerializer.h>
+#include <aws/core/http/HttpClient.h>
 
 namespace loabot::handler {
 
@@ -13,9 +14,9 @@ struct CommandHandler
 {
     using JsonValue = Aws::Utils::Json::JsonValue;
     using JsonView = Aws::Utils::Json::JsonView;
-    using Handler = std::function<JsonValue(const JsonView)>;
+    using Handler = std::function<JsonValue(JsonView)>;
 
-    JsonValue handle(const std::string& command, const JsonView data) {
+    JsonValue handle(const std::string& command, JsonView data) {
         auto h_it = handlers.find(command);
         if (h_it == handlers.end()) {
             throw std::runtime_error("Unknown Command: " + command);
@@ -37,7 +38,7 @@ private:
 };
 
 struct LoabotHandlerBuilder {
-    std::unique_ptr<CommandHandler> build();
+    std::unique_ptr<CommandHandler> build(std::shared_ptr<Aws::Http::HttpClient> http_client);
 };
 
 }

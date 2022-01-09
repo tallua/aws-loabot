@@ -28,7 +28,7 @@ struct WebRequestParam {
     std::optional<Aws::Utils::Json::JsonValue> body;
 };
 
-std::shared_ptr<Aws::Http::HttpRequest> create_request(const WebRequestParam& param)
+inline std::shared_ptr<Aws::Http::HttpRequest> create_request(const WebRequestParam& param)
 {
     const auto request = Aws::Http::CreateHttpRequest(param.uri, param.method, []() {
         return new std::stringstream();

@@ -23,38 +23,9 @@ using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
 using namespace Aws::Http;
 
-
 using namespace loabot::log;
 using namespace loabot::handler;
 using namespace  loabot::http;
-
-namespace {
-
-void test_lostark_webpage_get(std::shared_ptr<HttpClient> http_client)
-{
-    const auto lostark_request = create_request({
-        "",
-        HttpMethod::HTTP_GET,
-        {},
-        {},
-        {}
-    });
-
-    const auto http_response = http_client->MakeRequest(lostark_request);
-    const auto http_response_code = http_response->GetResponseCode();
-    if (http_response_code == HttpResponseCode::OK) {
-        const auto http_response_body = [&]{
-            std::stringstream ss;
-            ss << http_response->GetResponseBody().rdbuf();
-            return ss.str();
-        }();
-        LOG("Response Code: (", int(http_response->GetResponseCode()), ") : Length: ", http_response_body.size());
-    } else {
-        LOG("Error: http status code(", int(http_response->GetResponseCode()), ")");
-    }
-}
-
-}
 
 int main(int, char**)
 {
@@ -67,7 +38,7 @@ int main(int, char**)
     }();
 
     auto command_handler_builder = loabot::handler::LoabotHandlerBuilder();
-    auto command_handler = std::shared_ptr<CommandHandler>(command_handler_builder.build());
+    auto command_handler = std::shared_ptr<CommandHandler>(command_handler_builder.build(http_client));
 
     run_handler([http_client, command_handler](const invocation_request& req) {
         LOG(req.payload);
