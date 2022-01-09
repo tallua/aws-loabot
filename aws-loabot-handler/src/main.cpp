@@ -11,6 +11,7 @@
 #include <aws/core/client/ClientConfiguration.h>
 #include <aws/core/http/HttpClient.h>
 #include <aws/core/http/HttpClientFactory.h>
+#include <aws/core/http/URI.h>
 
 #include "discord/message.hpp"
 #include "loabot/log.hpp"
@@ -20,6 +21,8 @@ using namespace Aws::Utils::Json;
 using namespace Aws::Http;
 
 
+using namespace loabot::log;
+
 namespace loabot::http {
 
 struct WebRequestParam {
@@ -27,7 +30,7 @@ struct WebRequestParam {
         std::string key;
         std::string value;
     };
-    std::string url;
+    URI uri;
     HttpMethod method;
     std::vector<HeaderData> headers;
 
@@ -37,7 +40,7 @@ struct WebRequestParam {
 
 std::shared_ptr<HttpRequest> create_request(const WebRequestParam& param)
 {
-    const auto request = CreateHttpRequest(param.url, param.method, []() {
+    const auto request = CreateHttpRequest(param.uri, param.method, []() {
         return new std::stringstream();
     });
 
@@ -59,26 +62,44 @@ std::shared_ptr<HttpRequest> create_request(const WebRequestParam& param)
     return request;
 }
 
+void test_lostark_webpage_get(std::shared_ptr<HttpClient> http_client)
+{
+    const auto lostark_request = create_request({
+        "",
+        HttpMethod::HTTP_GET,
+        {},
+        {},
+        {}
+    });
+
+    const auto http_response = http_client->MakeRequest(lostark_request);
+    const auto http_response_code = http_response->GetResponseCode();
+    if (http_response_code == HttpResponseCode::OK) {
+        const auto http_response_body = [&]{
+            std::stringstream ss;
+            ss << http_response->GetResponseBody().rdbuf();
+            return ss.str();
+        }();
+        LOG("Response Code: (", int(http_response->GetResponseCode()), ") : Length: ", http_response_body.size());
+    } else {
+        LOG("Error: http status code(", int(http_response->GetResponseCode()), ")");
+    }
+}
 }
 
-
-
-using namespace loabot::log;
 using namespace  loabot::http;
-
 int main(int, char**)
 {
     Aws::InitAPI(Aws::SDKOptions());
 
-    auto client = [] {
+    auto http_client = [] {
         Aws::Client::ClientConfiguration config;
         config.region = "ap-northeast-2";
         return CreateHttpClient(config);
     }();
 
-    run_handler([client](const invocation_request& req) {
+    run_handler([http_client](const invocation_request& req) {
         LOG(req.payload);
-
         const auto payload = JsonValue(req.payload);
 
         const auto discord_request = create_request({
@@ -89,7 +110,7 @@ int main(int, char**)
             JsonValue(R"({ "content": "Yeah!!!" })")
         });
 
-        const auto discord_response = client->MakeRequest(discord_request);
+        const auto discord_response = http_client->MakeRequest(discord_request);
         const auto discord_response_body = [&]{
             std::stringstream ss;
             ss << discord_response->GetResponseBody().rdbuf();
