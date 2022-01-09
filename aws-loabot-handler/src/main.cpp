@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <functional>
+#include <optional>
 
 #include <aws/core/Aws.h>
 #include <aws/core/utils/json/JsonSerializer.h>
@@ -18,7 +19,52 @@ using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
 using namespace Aws::Http;
 
+
+namespace loabot::http {
+
+struct WebRequestParam {
+    struct HeaderData {
+        std::string key;
+        std::string value;
+    };
+    std::string url;
+    HttpMethod method;
+    std::vector<HeaderData> headers;
+
+    std::optional<std::string> authorization;
+    std::optional<JsonValue> body;
+};
+
+std::shared_ptr<HttpRequest> create_request(const WebRequestParam& param)
+{
+    const auto request = CreateHttpRequest(param.url, param.method, []() {
+        return new std::stringstream();
+    });
+
+    std::for_each(param.headers.begin(), param.headers.end(), [&](auto&& data) {
+        request->SetHeaderValue(data.key, data.value);
+    });
+
+    if (param.body.has_value()) {
+        auto body_string = param.body.value().View().WriteCompact();
+        request->SetContentLength(std::to_string(body_string.size()));
+        request->AddContentBody(std::make_shared<std::stringstream>(std::move(body_string)));
+        request->SetContentType("application/json");
+    }
+
+    if (param.authorization.has_value()) {
+        request->SetAuthorization(param.authorization.value());
+    }
+
+    return request;
+}
+
+}
+
+
+
 using namespace loabot::log;
+using namespace  loabot::http;
 
 int main(int, char**)
 {
@@ -35,29 +81,21 @@ int main(int, char**)
 
         const auto payload = JsonValue(req.payload);
 
-        const auto response_url = payload.View().GetObject("callback").GetString("url");
-        const auto response_auth = payload.View().GetObject("callback").GetString("Authorization");
-        const auto discord_request = CreateHttpRequest(response_url, HttpMethod::HTTP_PATCH, []() {
-            return new std::stringstream();
+        const auto discord_request = create_request({
+            payload.View().GetObject("callback").GetString("url"),
+            HttpMethod::HTTP_PATCH,
+            {},
+            payload.View().GetObject("callback").GetString("Authorization"),
+            JsonValue(R"({ "content": "Yeah!!!" })")
         });
-        discord_request->SetHeaderValue("Authorization", response_auth);
-        discord_request->SetAuthorization(response_auth);
-        discord_request->SetContentType("application/json");
-        const std::string test_data = R"({ "content": "Yeah!!!" })";
-        auto request_body = [&] {
-            LOG(test_data);
-            auto stream = std::make_shared<std::stringstream>(test_data);
-            return stream;
-        }();
-        discord_request->AddContentBody(request_body);
-        discord_request->SetContentLength(std::to_string(test_data.size()));
 
         const auto discord_response = client->MakeRequest(discord_request);
-        LOG("Response Code: ", int(discord_response->GetResponseCode()));
-        std::stringstream ss;
-        ss << discord_response->GetResponseBody().rdbuf();
-        const auto response_body = ss.str();
-        LOG("Response Body: ", response_body);
+        const auto discord_response_body = [&]{
+            std::stringstream ss;
+            ss << discord_response->GetResponseBody().rdbuf();
+            return ss.str();
+        }();
+        LOG("Response Code: (", int(discord_response->GetResponseCode()), ") : ", discord_response_body);
 
         return invocation_response::success("Invoked!!!", "application/json");
     });
