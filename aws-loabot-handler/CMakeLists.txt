@@ -9,9 +9,10 @@ find_package(AWSSDK REQUIRED COMPONENTS lambda)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/message.cpp)
+    src/message.cpp
+    src/loabot_handler.cpp)
 
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PRIVATE ./include)
 target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime ${AWSSDK_LINK_LIBRARIES})
 target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
 target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
