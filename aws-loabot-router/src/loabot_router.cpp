@@ -79,6 +79,8 @@ std::unique_ptr<Router> LoabotRouterBuilder::build()
 {
     auto router = std::make_unique<Router>();
 
+    router->set_fail_response(discord::ResponseBuilder::Failed("알 수 없는 명령어에요."));
+
     auto handlers = std::make_shared<LoabotHandlers>();
     auto random = std::make_shared<std::random_device>();
 

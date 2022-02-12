@@ -26,11 +26,13 @@ public:
 
 public:
     void add_handler(std::string command, RouteHandler handler);
+    void set_fail_response(discord::Response response);
 
     discord::Response route(const JsonView body, const RouteContext& context) const;
 
 private:
     using RoutingTable = std::unordered_map<std::string, RouteHandler>;
+    discord::Response fail_response;
     RoutingTable route_table;
 };
 
