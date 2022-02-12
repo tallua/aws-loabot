@@ -4,16 +4,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 project(aws-loabot-router)
 
-include(FetchContent)
+# dependency
+## dependency: sodium
 
-find_package(aws-lambda-runtime)
-find_package(AWSSDK REQUIRED COMPONENTS lambda)
 FetchContent_Declare(Sodium
     GIT_REPOSITORY https://github.com/robinlinden/libsodium-cmake.git
 )
 FetchContent_MakeAvailable(Sodium)
 
-
+# project
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/validate.cpp

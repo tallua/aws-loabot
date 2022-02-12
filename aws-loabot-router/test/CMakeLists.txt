@@ -5,14 +5,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_CXX_FLAGS -pthread)
 project(aws-loabot-router-test)
 
-# dependency
-include(FetchContent)
 
-## dependency: sodium
-FetchContent_Declare(Sodium
-    GIT_REPOSITORY https://github.com/robinlinden/libsodium-cmake.git
-)
-FetchContent_MakeAvailable(Sodium)
 
 ## dependency: gtest
 FetchContent_Declare(
@@ -21,13 +14,6 @@ FetchContent_Declare(
   GIT_TAG origin/main
 )
 FetchContent_MakeAvailable(googletest)
-
-## dependency: aws-lambda-runtime
-find_package(aws-lambda-runtime)
-
-## dependency: aws-sdk
-find_package(AWSSDK REQUIRED COMPONENTS lambda)
-
 
 # project
 enable_testing()
