@@ -28,3 +28,5 @@ target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
 
 install(TARGETS ${PROJECT_NAME})
 aws_lambda_package_target(${PROJECT_NAME})
+
+add_subdirectory(test)
