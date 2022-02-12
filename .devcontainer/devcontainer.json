@@ -12,7 +12,8 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+		"cmake.cmakePath": "cmake3"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -29,6 +30,6 @@
 	// "postCreateCommand": "gcc -v",
 
 	// Comment out this line to run as root instead.
-	"remoteUser": "vscode"
+	"remoteUser": "root"
 
 }
