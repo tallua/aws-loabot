@@ -37,7 +37,8 @@ add_executable(${PROJECT_NAME}
     ../src/message.cpp
     ../src/router.cpp
     ../src/loabot_router.cpp
-    ./test_main.cpp)
+    ./test_main.cpp
+    ./test_router.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ../include)
 target_link_libraries(${PROJECT_NAME}
