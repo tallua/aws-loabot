@@ -1,11 +1,9 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(CMAKE_CXX_FLAGS -pthread)
 project(aws-loabot-router-test)
-
-
 
 ## dependency: gtest
 FetchContent_Declare(
@@ -13,7 +11,11 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG origin/main
 )
-FetchContent_MakeAvailable(googletest)
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_Populate(googletest)
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+endif()
 
 # project
 enable_testing()
@@ -37,8 +39,6 @@ target_link_libraries(${PROJECT_NAME}
 
 target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
 target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
-
-install(TARGETS ${PROJECT_NAME})
 
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})

@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 project(aws-loabot-handler)
 
+## dependency: aws-lambda-runtime
 find_package(aws-lambda-runtime)
+
+## dependency: aws-sdk-cpp
 find_package(AWSSDK REQUIRED COMPONENTS lambda)
 
 add_executable(${PROJECT_NAME}
@@ -17,5 +20,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime ${AWSSDK_L
 target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
 target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
 
-install(TARGETS ${PROJECT_NAME})
 aws_lambda_package_target(${PROJECT_NAME})
