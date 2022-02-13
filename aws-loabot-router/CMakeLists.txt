@@ -36,6 +36,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime ${AWSSDK_L
 target_compile_features(${PROJECT_NAME} PRIVATE "cxx_std_17")
 target_compile_options(${PROJECT_NAME} PRIVATE -pedantic -Wall -Werror -Wextra)
 
-aws_lambda_package_target(${PROJECT_NAME})
+aws_lambda_package_target(${PROJECT_NAME} NO_LIBC)
 
 add_subdirectory(test)
