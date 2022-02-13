@@ -1,6 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code, Architecture } from 'aws-cdk-lib/aws-lambda';
 
 export interface HandlerConfig {
   name: string;
@@ -20,7 +20,8 @@ export class DiscordHandler extends Stack {
         functionName: `${config.name}${lambda_info.postfix}`,
         runtime: Runtime.PROVIDED_AL2,
         handler: 'index.handler',
-        code: Code.fromAsset(lambda_info.path)
+        code: Code.fromAsset(lambda_info.path),
+        architecture: Architecture.X86_64
       });
     });
   }
