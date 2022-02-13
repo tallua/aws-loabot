@@ -18,13 +18,11 @@ RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git \
     && cmake3 .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_ONLY="lambda" -DCPP_STANDARD=17 -DENABLE_UNITY_BUILD=ON \
     && make && make install
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash \
-    && . ~/.nvm/nvm.sh \
-    && nvm install node \
-    && npm install -g aws-cdk typescript
+RUN yum -y install libsodium-devel
+
+RUN yum -y install nodejs npm --disablerepo=* --enablerepo=epel
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
 
-RUN yum install -y libsodium-devel
