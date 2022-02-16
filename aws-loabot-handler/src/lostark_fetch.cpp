@@ -1,4 +1,4 @@
-#include "loabot/lostark_fetch.hpp"
+#include "loabot/loabot_fetch.hpp"
 
 #include <gumbo.h>
 
@@ -23,7 +23,7 @@ const StatData& LoaHomepageDataFetcher::FetchStat() {
         //
     }
 
-    return stat.value();/
+    return stat.value();
 }
 
 const MokokoData& LoaHomepageDataFetcher::FetchMokoko() {

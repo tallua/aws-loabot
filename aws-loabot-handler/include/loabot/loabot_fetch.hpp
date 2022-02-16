@@ -4,7 +4,7 @@
 #include <optional>
 #include <vector>
 
-#include "./lostark_data.hpp"
+#include "loabot/loabot_data.hpp"
 
 namespace loabot::data::fetch {
 

@@ -16,8 +16,8 @@
 
 #include "discord/message.hpp"
 #include "loabot/log.hpp"
-#include "loabot/handler.hpp"
-#include "loabot/http.hpp"
+#include "loabot/loabot_handler.hpp"
+#include "loabot/loabot_http.hpp"
 
 using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;

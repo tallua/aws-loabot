@@ -1,7 +1,7 @@
-#include "loabot/handler.hpp"
+#include "loabot/loabot_handler.hpp"
 
 #include "loabot/log.hpp"
-#include "loabot/http.hpp"
+#include "loabot/loabot_http.hpp"
 
 #include <aws/core/http/HttpResponse.h>
 
