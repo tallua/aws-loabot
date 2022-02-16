@@ -12,7 +12,6 @@ struct Content {
 
 struct Embed {
     std::optional<std::string> title;
-    std::optional<std::string> title;
 };
 
 }  // namespace discord::message

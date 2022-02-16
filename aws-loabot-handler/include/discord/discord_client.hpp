@@ -7,12 +7,10 @@
 
 namespace discord::client {
 
-
 struct AsyncDiscordClient {
     void reply(const discord::message::Embed& embed);
     void reply(const discord::message::Content& content);
 };
-
 
 class AsyncDiscordClientBuilder {
 public:
@@ -23,7 +21,5 @@ public:
 
     ClientPtr build(Json request) const;
 };
-
-
 
 }
