@@ -19,6 +19,9 @@
 #include "loabot/loabot_handler.hpp"
 #include "loabot/loabot_http.hpp"
 
+#include "discord/discord_message.hpp"
+#include "discord/discord_client.hpp"
+
 using namespace aws::lambda_runtime;
 using namespace Aws::Utils::Json;
 using namespace Aws::Http;
@@ -26,6 +29,9 @@ using namespace Aws::Http;
 using namespace loabot::log;
 using namespace loabot::handler;
 using namespace  loabot::http;
+
+
+using discord::client::AsyncDiscordClientBuilder;
 
 int main(int, char**)
 {
@@ -40,38 +46,31 @@ int main(int, char**)
     auto command_handler_builder = loabot::handler::LoabotHandlerBuilder();
     auto command_handler = std::shared_ptr<CommandHandler>(command_handler_builder.build(http_client));
 
-    run_handler([http_client, command_handler](const invocation_request& req) {
+    Aws::Client::ClientConfiguration aws_config;
+    auto discord_builder = AsyncDiscordClientBuilder(aws_config);
+    //
+
+    run_handler([discord_builder, command_handler](const invocation_request& req) {
         LOG(req.payload);
         const auto payload = JsonValue(req.payload);
 
-        const auto transaction_id = payload.View().GetString("id");
-        const auto command = payload.View().GetObject("data").GetString("name");
-
-        auto discord_result = JsonValue(R"({ "content": "오류가 생겼어요. 나중에 다시 시도해주세요" })");
         try {
-            discord_result = command_handler->handle(command, payload.View().GetObject("data"));
+            auto discord = discord_builder.build(payload.View());
+
+            const auto command = payload.View().GetObject("data").GetString("name");
+
+            const auto result = command_handler->handle(command, payload.View());
+
+            discord->reply(result);
+
+            return invocation_response::success("Invoked!!!", "application/json");
+        } catch (const std::exception& e) {
+            LOG(e.what());
+            return invocation_response::failure("", "");
+        } catch (...) {
+            LOG("unknown exception occurred");
+            return invocation_response::failure("", "");
         }
-        catch (const std::exception& e){
-            LOG("Error: failed to handle: transaction[", transaction_id, "] ", e.what());
-        }
-
-        const auto discord_request = create_request({
-            payload.View().GetObject("callback").GetString("url"),
-            HttpMethod::HTTP_PATCH,
-            {},
-            payload.View().GetObject("callback").GetString("Authorization"),
-            discord_result
-        });
-
-        const auto discord_response = http_client->MakeRequest(discord_request);
-        const auto discord_response_body = [&]{
-            std::stringstream ss;
-            ss << discord_response->GetResponseBody().rdbuf();
-            return ss.str();
-        }();
-        LOG("Discord Response: transaction[", transaction_id, "] (", int(discord_response->GetResponseCode()), ") : ", discord_response_body);
-
-        return invocation_response::success("Invoked!!!", "application/json");
     });
 
     return 0;
