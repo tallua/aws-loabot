@@ -1,32 +1,21 @@
 #include <aws/core/Aws.h>
 #include <aws/core/client/ClientConfiguration.h>
-#include <aws/core/http/HttpClient.h>
-#include <aws/core/http/HttpClientFactory.h>
-#include <aws/core/http/URI.h>
 #include <aws/core/utils/json/JsonSerializer.h>
 #include <aws/lambda-runtime/runtime.h>
 
-#include <functional>
-#include <iostream>
-#include <optional>
-#include <sstream>
-#include <unordered_map>
-
 #include "discord/discord_client.hpp"
-#include "discord/discord_message.hpp"
-#include "discord/message.hpp"
 #include "loabot/loabot_handler.hpp"
-#include "loabot/loabot_http.hpp"
 #include "loabot/log.hpp"
+
+using namespace loabot::log;
 
 using aws::lambda_runtime::invocation_request;
 using aws::lambda_runtime::invocation_response;
 using aws::lambda_runtime::run_handler;
 using Aws::Utils::Json::JsonValue;
 
-using namespace loabot::log;
-
 using discord::client::AsyncDiscordClientBuilder;
+
 using loabot::handler::LoabotBuilder;
 
 int main(int, char**) {
