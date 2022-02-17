@@ -154,6 +154,8 @@ CharacterData LoaHomepageDataFetcher::Context::get_character() {
     data.job = character_node.find(Class{"wrapper-define"})[1]
                    .find(Tag{"dd"})
                    .direct_text();
+    data.url = Aws::Http::URI::URLEncodePath(
+        "https://m-lostark.game.onstove.com/Profile/Character/" + data.name);
 
     return data;
 }
@@ -187,9 +189,9 @@ StatData LoaHomepageDataFetcher::Context::get_stat() {
     auto combat_node_size = combat_node.size();
     for (std::size_t i = 0; i < combat_node_size; ++i) {
         data.combat_stats.push_back(
-            {combat_node[0].find(Tag{"span"} && Nth{0}).direct_text(),
+            {combat_node[i].find(Tag{"span"} && Nth{0}).direct_text(),
              std::stoi(
-                 combat_node[0].find(Tag{"span"} && Nth{1}).direct_text())});
+                 combat_node[i].find(Tag{"span"} && Nth{1}).direct_text())});
     }
     auto engrave_node =
         stat_node.find(Class{"profile-ability-engrave"}).find(Tag{"ul"});

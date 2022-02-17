@@ -36,6 +36,7 @@ void AwsDiscordContext::send_data(const std::string& body) const {
     const auto discord_request =
         create_request(context.url, context.authorization, body);
 
+    LOG("Responding: ", body);
     const auto discord_response = http_client->MakeRequest(discord_request);
     const auto discord_response_body = [&] {
         std::stringstream ss;

@@ -8,6 +8,9 @@ struct CharacterData {
     std::string name;
     std::string job;
     std::string server;
+
+    std::string thumbnail;
+    std::string url;
 };
 
 struct StatData {

@@ -18,8 +18,6 @@ discord::message::Embed format_character(const data::CharacterData& character,
     embed.fields.push_back({"공격력"s, stat.attack_point});
     embed.fields.push_back({"체력"s, stat.health_point});
 
-    embed.fields.push_back({""s, ""s, false});
-
     auto combat_stats = stat.combat_stats;
     std::sort(combat_stats.begin(), combat_stats.end(),
               [](auto&& lhs, auto&& rhs) { return lhs.value > rhs.value; });
@@ -28,13 +26,11 @@ discord::message::Embed format_character(const data::CharacterData& character,
     embed.fields.push_back(
         {combat_stats[1].name, std::to_string(combat_stats[1].value)});
 
-    embed.fields.push_back({""s, ""s, false});
-
-    std::for_each(stat.engraves.begin(), stat.engraves.end(),
-                  [&](auto&& engrave) {
-                      embed.fields.push_back(
-                          {engrave.name, std::to_string(engrave.level)});
-                  });
+    std::for_each(
+        stat.engraves.begin(), stat.engraves.end(), [&](auto&& engrave) {
+            embed.fields.push_back(
+                {"[각인] " + engrave.name, std::to_string(engrave.level)});
+        });
 
     return embed;
 }

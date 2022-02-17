@@ -65,10 +65,10 @@ int main(int, char**) {
                 request.discord_context
             );
 
-            const auto command =
+            const auto command_name =
                 payload.View().GetObject("data").GetString("name");
 
-            const auto result = loabot->handle({command, payload.View()});
+            const auto result = loabot->handle({command_name, payload.View().GetObject("data")});
 
             std::visit([&](auto&& req) { discord_context->reply(req); },
                        result);

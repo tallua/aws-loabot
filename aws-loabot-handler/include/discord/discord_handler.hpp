@@ -9,7 +9,7 @@ namespace discord::handler {
 
 template <typename _Tp>
 struct DiscordCommand {
-    const std::string& command;
+    std::string command;
     _Tp payload;
 };
 
