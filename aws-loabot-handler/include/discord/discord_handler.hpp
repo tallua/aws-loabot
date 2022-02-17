@@ -1,32 +1,29 @@
 #pragma once
 
-#include <aws/core/utils/json/JsonSerializer.h>
-
-#include <variant>
 #include <functional>
+#include <variant>
 
 #include "discord_message.hpp"
 
 namespace discord::handler {
 
-struct Request {
-    Aws::Utils::Json::JsonView view;
-};
-
-struct Command {
+template <typename _Tp>
+struct DiscordCommand {
     const std::string& command;
-    Aws::Utils::Json::JsonView payload;
+    _Tp payload;
 };
 
-using Response =
+using DiscordResponse =
     std::variant<discord::message::Content, discord::message::Embed>;
 
+template <typename _Tp>
 class DiscordHandler {
 public:
-    using CommandHandler = std::function<Response(const Command&)>;
+    using Command = DiscordCommand<_Tp>;
+    using CommandHandler = std::function<DiscordResponse(const Command&)>;
 
 public:
-    Response handle(Command command) const {
+    DiscordResponse handle(const Command& command) const {
         auto h_it = handlers.find(command.command);
         if (h_it == handlers.end()) {
             throw std::runtime_error("Unknown Command: " + command.command);

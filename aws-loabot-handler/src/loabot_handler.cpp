@@ -39,97 +39,95 @@ std::array giant_alias{"거인의 심장"s, "심장"s};
 std::array masterpiece_alias{"위대한 미술품"s, "미술품"s};
 std::array bounties_alias{"항해 모험물"s, "모험물"s};
 std::array leaf_alias{"세계수의 잎"s, "세계수"s};
+
 }  // namespace
 
-std::unique_ptr<discord::handler::DiscordHandler> LoabotBuilder::build(
+LoabotBuilder::HandlerPtr LoabotBuilder::build(
     Aws::Client::ClientConfiguration) {
     using loabot::data::fetch::LoaHomepageDataFetcher;
 
-    auto handler = std::make_unique<discord::handler::DiscordHandler>();
+    auto handler = std::make_unique<Handler>();
 
-    handler->add_command(
-        "캐릭터", [](const discord::handler::Command& command) {
-            const auto character_name =
-                find_option(command.payload.GetArray("options"), "이름")
-                    .GetString("value");
+    handler->add_command("캐릭터", [](const Handler::Command& command) {
+        const auto character_name =
+            find_option(command.payload.GetArray("options"), "이름")
+                .GetString("value");
 
-            auto character_fetcher =
-                std::make_unique<LoaHomepageDataFetcher>(character_name);
+        auto character_fetcher =
+            std::make_unique<LoaHomepageDataFetcher>(character_name);
 
-            const auto& character = character_fetcher->fetch_character();
-            const auto& stat = character_fetcher->fetch_stat();
+        const auto& character = character_fetcher->fetch_character();
+        const auto& stat = character_fetcher->fetch_stat();
 
-            return response::format_character(character, stat);
-        });
+        return response::format_character(character, stat);
+    });
 
-    handler->add_command(
-        "수집품", [](const discord::handler::Command& command) {
-            const auto character_name =
-                find_option(command.payload.GetArray("options"), "이름")
-                    .GetString("value");
+    handler->add_command("수집품", [](const Handler::Command& command) {
+        const auto character_name =
+            find_option(command.payload.GetArray("options"), "이름")
+                .GetString("value");
 
-            auto character_fetcher =
-                std::make_unique<LoaHomepageDataFetcher>(character_name);
+        auto character_fetcher =
+            std::make_unique<LoaHomepageDataFetcher>(character_name);
 
-            const auto collection_name =
-                find_option(command.payload.GetArray("options"), "종류")
-                    .GetString("value");
-            auto match_collection = [&](auto&& aliases) {
-                return std::find(aliases.begin(), aliases.end(),
-                                 collection_name) != aliases.end();
-            };
+        const auto collection_name =
+            find_option(command.payload.GetArray("options"), "종류")
+                .GetString("value");
+        auto match_collection = [&](auto&& aliases) {
+            return std::find(aliases.begin(), aliases.end(), collection_name) !=
+                   aliases.end();
+        };
 
-            if (match_collection(mokoko_alias)) {
-                const auto& mokoko = character_fetcher->fetch_mokoko_seeds();
+        if (match_collection(mokoko_alias)) {
+            const auto& mokoko = character_fetcher->fetch_mokoko_seeds();
 
-                return response::format_mokoko(mokoko);
-            }
+            return response::format_mokoko(mokoko);
+        }
 
-            if (match_collection(island_alias)) {
-                const auto& island = character_fetcher->fetch_island_heart();
+        if (match_collection(island_alias)) {
+            const auto& island = character_fetcher->fetch_island_heart();
 
-                return response::format_collection(island);
-            }
+            return response::format_collection(island);
+        }
 
-            if (match_collection(tome_alias)) {
-                const auto& tome = character_fetcher->fetch_ignea_token();
+        if (match_collection(tome_alias)) {
+            const auto& tome = character_fetcher->fetch_ignea_token();
 
-                return response::format_collection(tome);
-            }
+            return response::format_collection(tome);
+        }
 
-            if (match_collection(star_alias)) {
-                const auto& star = character_fetcher->fetch_orpheus_star();
+        if (match_collection(star_alias)) {
+            const auto& star = character_fetcher->fetch_orpheus_star();
 
-                return response::format_collection(star);
-            }
+            return response::format_collection(star);
+        }
 
-            if (match_collection(giant_alias)) {
-                const auto& giant = character_fetcher->fetch_giants_heart();
+        if (match_collection(giant_alias)) {
+            const auto& giant = character_fetcher->fetch_giants_heart();
 
-                return response::format_collection(giant);
-            }
+            return response::format_collection(giant);
+        }
 
-            if (match_collection(masterpiece_alias)) {
-                const auto& masterpiece = character_fetcher->fetch_masterpiece();
+        if (match_collection(masterpiece_alias)) {
+            const auto& masterpiece = character_fetcher->fetch_masterpiece();
 
-                return response::format_collection(masterpiece);
-            }
+            return response::format_collection(masterpiece);
+        }
 
-            if (match_collection(bounties_alias)) {
-                const auto& bounties = character_fetcher->fetch_sea_bounties();
+        if (match_collection(bounties_alias)) {
+            const auto& bounties = character_fetcher->fetch_sea_bounties();
 
-                return response::format_collection(bounties);
-            }
+            return response::format_collection(bounties);
+        }
 
-            if (match_collection(leaf_alias)) {
-                const auto& leaves = character_fetcher->fetch_worldtree_leaf();
+        if (match_collection(leaf_alias)) {
+            const auto& leaves = character_fetcher->fetch_worldtree_leaf();
 
-                return response::format_collection(leaves);
-            }
+            return response::format_collection(leaves);
+        }
 
-            return discord::message::Content{collection_name +
-                                             "이 무엇인가요?"};
-        });
+        return discord::message::Content{collection_name + "이 무엇인가요?"};
+    });
 
     return handler;
 }
