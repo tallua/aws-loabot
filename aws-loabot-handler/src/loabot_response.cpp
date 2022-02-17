@@ -21,9 +21,8 @@ discord::message::Embed format_character(const data::CharacterData& character,
     embed.fields.push_back({""s, ""s, false});
 
     auto combat_stats = stat.combat_stats;
-    std::sort(combat_stats.begin(), combat_stats.end(), []() {
-
-    });
+    std::sort(combat_stats.begin(), combat_stats.end(),
+              [](auto&& lhs, auto&& rhs) { return lhs.value > rhs.value; });
     embed.fields.push_back(
         {combat_stats[0].name, std::to_string(combat_stats[0].value)});
     embed.fields.push_back(

@@ -2,6 +2,10 @@
 
 #include "gumbo/gumbo.hpp"
 
+#include "loabot/log.hpp"
+
+using namespace loabot::log;
+
 namespace loabot::data::fetch {
 
 class LoaHomepageDataFetcher::Context {
@@ -31,6 +35,7 @@ LoaHomepageDataFetcher::~LoaHomepageDataFetcher() = default;
 
 const CharacterData& LoaHomepageDataFetcher::fetch_character() {
     if (!character.has_value()) {
+        LOG("Fetching character data");
         character = context->get_character();
     }
 
@@ -39,6 +44,7 @@ const CharacterData& LoaHomepageDataFetcher::fetch_character() {
 
 const StatData& LoaHomepageDataFetcher::fetch_stat() {
     if (!stat.has_value()) {
+        LOG("Fetching stat data");
         stat = context->get_stat();
     }
 
@@ -47,6 +53,7 @@ const StatData& LoaHomepageDataFetcher::fetch_stat() {
 
 const MokokoData& LoaHomepageDataFetcher::fetch_mokoko_seeds() {
     if (!mokoko_seeds.has_value()) {
+        LOG("Fetching mokoko seeds");
         mokoko_seeds = context->get_mokoko("lui-tab1-5");
     }
 
@@ -55,6 +62,7 @@ const MokokoData& LoaHomepageDataFetcher::fetch_mokoko_seeds() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_island_heart() {
     if (!island_heart.has_value()) {
+        LOG("Fetching island heart");
         island_heart = context->get_collection("lui-tab1-1");
     }
 
@@ -63,6 +71,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_island_heart() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_ignea_token() {
     if (!ignea_token.has_value()) {
+        LOG("Fetching ignea token");
         ignea_token = context->get_collection("lui-tab1-7");
     }
 
@@ -71,6 +80,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_ignea_token() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_orpheus_star() {
     if (!orpheus_star.has_value()) {
+        LOG("Fetching orpheus star");
         orpheus_star = context->get_collection("lui-tab1-2");
     }
 
@@ -79,6 +89,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_orpheus_star() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_giants_heart() {
     if (!giants_heart.has_value()) {
+        LOG("Fetching giant's heart");
         giants_heart = context->get_collection("lui-tab1-3");
     }
 
@@ -87,6 +98,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_giants_heart() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_masterpiece() {
     if (!masterpiece.has_value()) {
+        LOG("Fetching masterpiece");
         masterpiece = context->get_collection("lui-tab1-4");
     }
 
@@ -95,6 +107,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_masterpiece() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_sea_bounties() {
     if (!sea_bounties.has_value()) {
+        LOG("Fetching sea bounties");
         sea_bounties = context->get_collection("lui-tab1-6");
     }
 
@@ -103,6 +116,7 @@ const CollectionData& LoaHomepageDataFetcher::fetch_sea_bounties() {
 
 const CollectionData& LoaHomepageDataFetcher::fetch_worldtree_leaf() {
     if (!worldtree_leaf.has_value()) {
+        LOG("Fetching worldtree leaf");
         worldtree_leaf = context->get_collection("lui-tab1-8");
     }
 
@@ -212,9 +226,8 @@ const std::string& LoaHomepageDataFetcher::Context::get_main_page() {
 
 const std::string& LoaHomepageDataFetcher::Context::get_collection_page() {
     if (!cached_collection_page.has_value()) {
-        const auto& main_page = get_main_page();
-
-
+        // TODO
+        throw std::exception("not implemented getting collection page");
     }
 
     return cached_collection_page.value();
