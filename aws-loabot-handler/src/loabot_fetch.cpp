@@ -1,7 +1,8 @@
 #include "loabot/loabot_fetch.hpp"
 
-#include "gumbo/gumbo.hpp"
+#include <stdexcept>
 
+#include "gumbo/gumbo.hpp"
 #include "loabot/log.hpp"
 
 using namespace loabot::log;
@@ -129,21 +130,18 @@ CharacterData LoaHomepageDataFetcher::Context::get_character() {
     using gumbo::selector::Nth;
     using gumbo::selector::Tag;
 
-    const auto& main_page = get_main_page();
+    const auto main_page = gumbo::parse(get_main_page());
 
-    auto character_node =
-        gumbo::parse(main_page).root().find(Class{"myinfo__character"});
+    auto character_node = main_page.root().find(Class{"myinfo__character"});
 
     CharacterData data;
     data.name =
         character_node.find(Id{"myinfo__character--button2"}).direct_text();
-    data.server = character_node.find(Class{"wrapper-define"})
-                      .find(Tag{"dl"} && Nth{0})
+    data.server = character_node.find(Class{"wrapper-define"})[0]
                       .find(Tag{"dd"})
                       .direct_text()
                       .substr(1);
-    data.job = character_node.find(Class{"wrapper-define"})
-                   .find(Tag{"dl"} && Nth{1})
+    data.job = character_node.find(Class{"wrapper-define"})[1]
                    .find(Tag{"dd"})
                    .direct_text();
 
@@ -156,43 +154,64 @@ StatData LoaHomepageDataFetcher::Context::get_stat() {
     using gumbo::selector::Nth;
     using gumbo::selector::Tag;
 
-    const auto& main_page = get_main_page();
+    const auto main_page = gumbo::parse(get_main_page());
 
-    auto character_node =
-        gumbo::parse(main_page).root().find(Id{"profile-char"});
+    auto stat_node = main_page.root().find(Id{"profile-char"});
 
     StatData data;
-    auto level_node =
-        character_node.find(Class{"profile-ability-basic"} && Nth{0})
-            .find(Tag{"ul"});
-    data.attack_point = level_node.find(Tag{"li"} && Nth{0})
-                            .find(Tag{"span"} && Nth{1})
-                            .direct_text();
-    data.health_point = level_node.find(Tag{"li"} && Nth{1})
-                            .find(Tag{"span"} && Nth{1})
-                            .direct_text();
+    auto level_node = main_page.root().find(Class{"myinfo__contents-level"});
+    data.expedition_level = level_node[0][0].find(Class{"level"}).direct_text();
+    data.item_level =
+        level_node.find(Class{"define item"}).find(Class{"level"}).full_text();
 
-    auto stat_node =
-        character_node.find(Class{"profile-ability-basic"} && Nth{1})
-            .find(Tag{"ul"});
+    auto ability_node = stat_node.find(Class{"profile-ability-basic"} && Nth{0})
+                            .find(Tag{"ul"});
+    data.attack_point =
+        ability_node[0].find(Tag{"span"} && Nth{1}).direct_text();
+    data.health_point =
+        ability_node[1].find(Tag{"span"} && Nth{1}).direct_text();
+
+    auto combat_node = stat_node.find(Class{"profile-ability-basic"} && Nth{1})
+                           .find(Tag{"ul"});
+
+    auto combat_node_size = combat_node.size();
+    for (std::size_t i = 0; i < combat_node_size; ++i) {
+        data.combat_stats.push_back({
+            combat_node[0].find(Tag{"span"} && Nth{0}).direct_text(),
+            std::stoi(combat_node[0].find(Tag{"span"} && Nth{1}).direct_text())
+        });
+    }
     auto engrave_node =
-        character_node.find(Class{"profile-ability-engrave"}).find(Tag{"ul"});
+        stat_node.find(Class{"profile-ability-engrave"}).find(Tag{"ul"});
+    auto engrave_node_size = engrave_node.size();
+    for (std::size_t i = 0; i < engrave_node_size; ++i) {
+        auto engrave = engrave_node[i].find(Tag{"span"}).direct_text();
+        auto split_pos = engrave.find(" Lv.");
+        if (split_pos == std::string::npos) {
+            throw std::runtime_error("failed to parse engrave");
+        }
+
+        data.engraves.push_back({
+            engrave.substr(0, split_pos),
+            std::stoi(engrave.substr(split_pos + 4))
+        });
+    }
 
     return data;
 }
 
 MokokoData LoaHomepageDataFetcher::Context::get_mokoko(
-    const std::string& tab_id) {
+    const std::string&) {
     using gumbo::selector::Class;
     using gumbo::selector::Id;
     using gumbo::selector::Tag;
 
-    const auto& collection_page = get_collection_page();
-    auto list = gumbo::parse(collection_page)
-                    .root()
-                    .find(Id{tab_id})
-                    .find(Class{"list"})
-                    .find(Tag{"li"});
+    //const auto& collection_page = get_collection_page();
+    //auto list = gumbo::parse(collection_page)
+    //                .root()
+    //                .find(Id{tab_id})
+    //                .find(Class{"list"})
+    //                .find(Tag{"li"});
 
     MokokoData data;
 
@@ -200,17 +219,17 @@ MokokoData LoaHomepageDataFetcher::Context::get_mokoko(
 }
 
 CollectionData LoaHomepageDataFetcher::Context::get_collection(
-    const std::string& tab_id) {
+    const std::string&) {
     using gumbo::selector::Class;
     using gumbo::selector::Id;
     using gumbo::selector::Tag;
 
-    const auto& collection_page = get_collection_page();
-    auto list = gumbo::parse(collection_page)
-                    .root()
-                    .find(Id{tab_id})
-                    .find(Class{"list"})
-                    .find(Tag{"li"});
+    //const auto& collection_page = get_collection_page();
+    //auto list = gumbo::parse(collection_page)
+    //                .root()
+    //                .find(Id{tab_id})
+    //                .find(Class{"list"})
+    //                .find(Tag{"li"});
     CollectionData data;
 
     return data;
@@ -218,7 +237,6 @@ CollectionData LoaHomepageDataFetcher::Context::get_collection(
 
 const std::string& LoaHomepageDataFetcher::Context::get_main_page() {
     if (!cached_main_page.has_value()) {
-        
     }
 
     return cached_main_page.value();
@@ -227,7 +245,7 @@ const std::string& LoaHomepageDataFetcher::Context::get_main_page() {
 const std::string& LoaHomepageDataFetcher::Context::get_collection_page() {
     if (!cached_collection_page.has_value()) {
         // TODO
-        throw std::exception("not implemented getting collection page");
+        throw std::runtime_error("not implemented getting collection page");
     }
 
     return cached_collection_page.value();
