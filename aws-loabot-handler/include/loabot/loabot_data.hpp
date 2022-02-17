@@ -25,5 +25,6 @@ struct MokokoCount {
 };
 
 using MokokoData = std::vector<CollectionItem<MokokoCount>>;
+using CollectionData = std::vector<CollectionItem<bool>>;
 
 }
