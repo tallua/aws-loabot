@@ -43,18 +43,18 @@ std::array leaf_alias{"세계수의 잎"s, "세계수"s};
 }  // namespace
 
 LoabotBuilder::HandlerPtr LoabotBuilder::build(
-    Aws::Client::ClientConfiguration) {
+    std::shared_ptr<Aws::Http::HttpClient> http_client) {
     using loabot::data::fetch::LoaHomepageDataFetcher;
 
     auto handler = std::make_unique<Handler>();
 
-    handler->add_command("캐릭터", [](const Handler::Command& command) {
+    handler->add_command("캐릭터", [http_client](const Handler::Command& command) {
         const auto character_name =
             find_option(command.payload.GetArray("options"), "이름")
                 .GetString("value");
 
         auto character_fetcher =
-            std::make_unique<LoaHomepageDataFetcher>(character_name);
+            std::make_unique<LoaHomepageDataFetcher>(character_name, http_client);
 
         const auto& character = character_fetcher->fetch_character();
         const auto& stat = character_fetcher->fetch_stat();
@@ -62,13 +62,13 @@ LoabotBuilder::HandlerPtr LoabotBuilder::build(
         return response::format_character(character, stat);
     });
 
-    handler->add_command("수집품", [](const Handler::Command& command) {
+    handler->add_command("수집품", [http_client](const Handler::Command& command) {
         const auto character_name =
             find_option(command.payload.GetArray("options"), "이름")
                 .GetString("value");
 
         auto character_fetcher =
-            std::make_unique<LoaHomepageDataFetcher>(character_name);
+            std::make_unique<LoaHomepageDataFetcher>(character_name, http_client);
 
         const auto collection_name =
             find_option(command.payload.GetArray("options"), "종류")

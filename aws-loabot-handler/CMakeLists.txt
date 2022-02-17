@@ -10,6 +10,11 @@ find_package(aws-lambda-runtime)
 ## dependency: aws-sdk-cpp
 find_package(AWSSDK REQUIRED COMPONENTS core)
 
+## dependecy: gumbo
+add_library(gumbo STATIC IMPORTED)
+set_target_properties(gumbo PROPERTIES IMPORTED_LOCATION /usr/local/lib/libgumbo.a)
+set_target_properties(gumbo PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/local/include/)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/loabot_handler.cpp

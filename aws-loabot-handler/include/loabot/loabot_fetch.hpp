@@ -4,6 +4,8 @@
 #include <optional>
 #include <vector>
 
+#include <aws/core/http/HttpClient.h>
+
 #include "loabot/loabot_data.hpp"
 
 namespace loabot::data::fetch {
@@ -25,7 +27,7 @@ public:
 
 class LoaHomepageDataFetcher : public DataFetcher {
 public:
-    LoaHomepageDataFetcher(const std::string& name);
+    LoaHomepageDataFetcher(const std::string& name, std::shared_ptr<Aws::Http::HttpClient> http);
     ~LoaHomepageDataFetcher();
 
 public:

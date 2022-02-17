@@ -52,7 +52,7 @@ int main(int, char**) {
     auto http_client = Aws::Http::CreateHttpClient(aws_config);
 
     const auto discord_client = std::make_shared<AwsDiscordClient>(http_client);
-    const auto loabot = std::shared_ptr(LoabotBuilder().build(aws_config));
+    const auto loabot = std::shared_ptr(LoabotBuilder().build(http_client));
 
     run_handler([discord_client, loabot](const invocation_request& req) {
         LOG(req.payload);

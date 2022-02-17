@@ -1,5 +1,10 @@
 #include "loabot/loabot_fetch.hpp"
 
+#include <aws/core/http/HttpClientFactory.h>
+#include <aws/core/http/HttpRequest.h>
+#include <aws/core/http/HttpResponse.h>
+#include <aws/core/http/HttpTypes.h>
+
 #include <stdexcept>
 
 #include "gumbo/gumbo.hpp"
@@ -11,7 +16,9 @@ namespace loabot::data::fetch {
 
 class LoaHomepageDataFetcher::Context {
 public:
-    Context(const std::string& name) : name(name) {}
+    Context(const std::string& name,
+            std::shared_ptr<Aws::Http::HttpClient> http_client)
+        : name(name), http_client(http_client) {}
 
 public:
     CharacterData get_character();
@@ -27,10 +34,13 @@ private:
     std::string name;
     std::optional<std::string> cached_main_page;
     std::optional<std::string> cached_collection_page;
+
+    std::shared_ptr<Aws::Http::HttpClient> http_client;
 };
 
-LoaHomepageDataFetcher::LoaHomepageDataFetcher(const std::string& name)
-    : context(std::make_unique<Context>(name)) {}
+LoaHomepageDataFetcher::LoaHomepageDataFetcher(
+    const std::string& name, std::shared_ptr<Aws::Http::HttpClient> http_client)
+    : context(std::make_unique<Context>(name, http_client)) {}
 
 LoaHomepageDataFetcher::~LoaHomepageDataFetcher() = default;
 
@@ -176,10 +186,10 @@ StatData LoaHomepageDataFetcher::Context::get_stat() {
 
     auto combat_node_size = combat_node.size();
     for (std::size_t i = 0; i < combat_node_size; ++i) {
-        data.combat_stats.push_back({
-            combat_node[0].find(Tag{"span"} && Nth{0}).direct_text(),
-            std::stoi(combat_node[0].find(Tag{"span"} && Nth{1}).direct_text())
-        });
+        data.combat_stats.push_back(
+            {combat_node[0].find(Tag{"span"} && Nth{0}).direct_text(),
+             std::stoi(
+                 combat_node[0].find(Tag{"span"} && Nth{1}).direct_text())});
     }
     auto engrave_node =
         stat_node.find(Class{"profile-ability-engrave"}).find(Tag{"ul"});
@@ -191,27 +201,24 @@ StatData LoaHomepageDataFetcher::Context::get_stat() {
             throw std::runtime_error("failed to parse engrave");
         }
 
-        data.engraves.push_back({
-            engrave.substr(0, split_pos),
-            std::stoi(engrave.substr(split_pos + 4))
-        });
+        data.engraves.push_back({engrave.substr(0, split_pos),
+                                 std::stoi(engrave.substr(split_pos + 4))});
     }
 
     return data;
 }
 
-MokokoData LoaHomepageDataFetcher::Context::get_mokoko(
-    const std::string&) {
+MokokoData LoaHomepageDataFetcher::Context::get_mokoko(const std::string&) {
     using gumbo::selector::Class;
     using gumbo::selector::Id;
     using gumbo::selector::Tag;
 
-    //const auto& collection_page = get_collection_page();
-    //auto list = gumbo::parse(collection_page)
-    //                .root()
-    //                .find(Id{tab_id})
-    //                .find(Class{"list"})
-    //                .find(Tag{"li"});
+    // const auto& collection_page = get_collection_page();
+    // auto list = gumbo::parse(collection_page)
+    //                 .root()
+    //                 .find(Id{tab_id})
+    //                 .find(Class{"list"})
+    //                 .find(Tag{"li"});
 
     MokokoData data;
 
@@ -224,12 +231,12 @@ CollectionData LoaHomepageDataFetcher::Context::get_collection(
     using gumbo::selector::Id;
     using gumbo::selector::Tag;
 
-    //const auto& collection_page = get_collection_page();
-    //auto list = gumbo::parse(collection_page)
-    //                .root()
-    //                .find(Id{tab_id})
-    //                .find(Class{"list"})
-    //                .find(Tag{"li"});
+    // const auto& collection_page = get_collection_page();
+    // auto list = gumbo::parse(collection_page)
+    //                 .root()
+    //                 .find(Id{tab_id})
+    //                 .find(Class{"list"})
+    //                 .find(Tag{"li"});
     CollectionData data;
 
     return data;
@@ -237,6 +244,29 @@ CollectionData LoaHomepageDataFetcher::Context::get_collection(
 
 const std::string& LoaHomepageDataFetcher::Context::get_main_page() {
     if (!cached_main_page.has_value()) {
+        auto http_request = Aws::Http::CreateHttpRequest(
+            Aws::Http::URI(
+                "https://m-lostark.game.onstove.com/Profile/Character/" + name),
+            Aws::Http::HttpMethod::HTTP_GET,
+            []() { return new std::stringstream(); });
+
+        const auto http_response = http_client->MakeRequest(http_request);
+        const auto http_response_code = http_response->GetResponseCode();
+        if (http_response_code != Aws::Http::HttpResponseCode::OK) {
+            LOG("Error: http status code(",
+                int(http_response->GetResponseCode()), ")");
+            throw std::runtime_error("invalid response status code: " +
+                                     std::to_string(int(http_response_code)));
+        }
+
+        const auto http_response_body = [&] {
+            std::stringstream ss;
+            ss << http_response->GetResponseBody().rdbuf();
+            return ss.str();
+        }();
+        LOG("Response Code: (", int(http_response->GetResponseCode()),
+            ") : Length: ", http_response_body.size());
+        cached_main_page = http_response_body;
     }
 
     return cached_main_page.value();
