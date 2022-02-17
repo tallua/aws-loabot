@@ -1,6 +1,6 @@
 #pragma once
 
-#include <aws/core/Aws.h>
+#include <aws/core/client/ClientConfiguration.h>
 
 #include "discord/discord_handler.hpp"
 

@@ -18,6 +18,10 @@ public:
 
 class LoaHomepageDataFetcher : public DataFetcher {
 public:
+    LoaHomepageDataFetcher();
+    ~LoaHomepageDataFetcher();
+
+public:
     const CharacterData& FetchCharacter() override;
     const StatData& FetchStat() override;
     const MokokoData& FetchMokoko() override;

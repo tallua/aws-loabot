@@ -2,6 +2,7 @@
 
 #include "loabot/log.hpp"
 #include "loabot/loabot_http.hpp"
+#include "loabot/loabot_fetch.hpp"
 
 #include <aws/core/http/HttpResponse.h>
 
@@ -59,22 +60,31 @@ std::string get_character_page(std::shared_ptr<HttpClient> http_client, const st
 
 }
 
-std::unique_ptr<CommandHandler> LoabotHandlerBuilder::build(std::shared_ptr<Aws::Http::HttpClient> http_client)
+std::unique_ptr<discord::handler::DiscordHandler> LoabotBuilder::build(Aws::Client::ClientConfiguration config)
 {
-    auto handler = std::make_unique<CommandHandler>();
+    using loabot::data::fetch::LoaHomepageDataFetcher;
+    using discord::message::Content;
+    using discord::message::Embed;
+    using discord::handler::Command;
 
-    handler->add_handler("캐릭터", [http_client] (JsonView view) {
-        const auto character_name = find_option(view.GetArray("options"), "이름").GetString("value");
-        const auto character_page = lostark::http::get_character_page(http_client, character_name);
+    auto handler = std::make_unique<discord::handler::DiscordHandler>();
+
+    handler->add_command("캐릭터", [] (Command command) {
+        const auto character_name = find_option(command.payload.GetArray("options"), "이름").GetString("value");
+        
+        auto fetcher = std::make_unique<LoaHomepageDataFetcher>();
+
+        auto character = fetcher->FetchCharacter();
+        auto stat = fetcher->FetchStat();
 
 
-        return JsonValue(R"({ "content": "조금만 기다려주세요..." })");
+        return Content{ "조금만 기다려주세요..." };
     });
-    handler->add_handler("거래소", [http_client] (JsonView) {
-        return JsonValue(R"({ "content": "아직 기능 구현중이에요..." })");
+    handler->add_command("거래소", [] (Command) {
+        return Content{ "조금만 기다려주세요..." };
     });
-    handler->add_handler("수집품", [http_client] (JsonView) {
-        return JsonValue(R"({ "content": "조금만 기다려주세요..." })");
+    handler->add_command("수집품", [] (Command) {
+        return Content{ "조금만 기다려주세요..." };
     });
 
     return handler;

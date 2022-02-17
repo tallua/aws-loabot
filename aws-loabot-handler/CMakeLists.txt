@@ -14,7 +14,8 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/message.cpp
     src/loabot_handler.cpp
-    src/lostark_fetch.cpp)
+    src/lostark_fetch.cpp
+    src/discord_client.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ./include)
 target_link_libraries(${PROJECT_NAME} PRIVATE AWS::aws-lambda-runtime ${AWSSDK_LINK_LIBRARIES} gumbo)

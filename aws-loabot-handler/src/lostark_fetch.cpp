@@ -10,6 +10,9 @@ struct LoaHomepageDataFetcher::Context {
 
 };
 
+LoaHomepageDataFetcher::LoaHomepageDataFetcher() = default;
+LoaHomepageDataFetcher::~LoaHomepageDataFetcher() = default;
+
 const CharacterData& LoaHomepageDataFetcher::FetchCharacter() {
     if (!character.has_value()) {
         //

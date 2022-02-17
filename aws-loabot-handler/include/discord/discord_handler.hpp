@@ -3,6 +3,7 @@
 #include <aws/core/utils/json/JsonSerializer.h>
 
 #include <variant>
+#include <functional>
 
 #include "discord_message.hpp"
 
@@ -14,7 +15,7 @@ struct Request {
 
 struct Command {
     const std::string& command;
-    Aws::Utils::Json::JsonView view;
+    Aws::Utils::Json::JsonView payload;
 };
 
 using Response =
