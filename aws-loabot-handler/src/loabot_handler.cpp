@@ -56,8 +56,8 @@ std::unique_ptr<discord::handler::DiscordHandler> LoabotBuilder::build(
             auto character_fetcher =
                 std::make_unique<LoaHomepageDataFetcher>(character_name);
 
-            const auto& character = character_fetcher->FetchCharacter();
-            const auto& stat = character_fetcher->FetchStat();
+            const auto& character = character_fetcher->fetch_character();
+            const auto& stat = character_fetcher->fetch_stat();
 
             return response::format_character(character, stat);
         });
@@ -80,49 +80,49 @@ std::unique_ptr<discord::handler::DiscordHandler> LoabotBuilder::build(
             };
 
             if (match_collection(mokoko_alias)) {
-                const auto& mokoko = character_fetcher->FetchMokoko();
+                const auto& mokoko = character_fetcher->fetch_mokoko_seeds();
 
                 return response::format_mokoko(mokoko);
             }
 
             if (match_collection(island_alias)) {
-                const auto& island = character_fetcher->FetchIslandHeart();
+                const auto& island = character_fetcher->fetch_island_heart();
 
                 return response::format_collection(island);
             }
 
             if (match_collection(tome_alias)) {
-                const auto& tome = character_fetcher->FetchIgneaToken();
+                const auto& tome = character_fetcher->fetch_ignea_token();
 
                 return response::format_collection(tome);
             }
 
             if (match_collection(star_alias)) {
-                const auto& star = character_fetcher->FetchOrpheusStar();
+                const auto& star = character_fetcher->fetch_orpheus_star();
 
                 return response::format_collection(star);
             }
 
             if (match_collection(giant_alias)) {
-                const auto& giant = character_fetcher->FetchGiantHeart();
+                const auto& giant = character_fetcher->fetch_giants_heart();
 
                 return response::format_collection(giant);
             }
 
             if (match_collection(masterpiece_alias)) {
-                const auto& masterpiece = character_fetcher->FetchMasterpiece();
+                const auto& masterpiece = character_fetcher->fetch_masterpiece();
 
                 return response::format_collection(masterpiece);
             }
 
             if (match_collection(bounties_alias)) {
-                const auto& bounties = character_fetcher->FetchSeaBounties();
+                const auto& bounties = character_fetcher->fetch_sea_bounties();
 
                 return response::format_collection(bounties);
             }
 
             if (match_collection(leaf_alias)) {
-                const auto& leaves = character_fetcher->FetchWorldTreeLeaf();
+                const auto& leaves = character_fetcher->fetch_worldtree_leaf();
 
                 return response::format_collection(leaves);
             }

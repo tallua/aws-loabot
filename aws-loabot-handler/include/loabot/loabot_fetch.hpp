@@ -11,16 +11,16 @@ namespace loabot::data::fetch {
 class DataFetcher {
 public:
 public:
-    virtual const CharacterData& FetchCharacter() = 0;
-    virtual const StatData& FetchStat() = 0;
-    virtual const MokokoData& FetchMokoko() = 0;
-    virtual const CollectionData& FetchIslandHeart() = 0;
-    virtual const CollectionData& FetchIgneaToken() = 0;
-    virtual const CollectionData& FetchOrpheusStar() = 0;
-    virtual const CollectionData& FetchGiantHeart() = 0;
-    virtual const CollectionData& FetchMasterpiece() = 0;
-    virtual const CollectionData& FetchSeaBounties() = 0;
-    virtual const CollectionData& FetchWorldTreeLeaf() = 0;
+    virtual const CharacterData& fetch_character() = 0;
+    virtual const StatData& fetch_stat() = 0;
+    virtual const MokokoData& fetch_mokoko_seeds() = 0;
+    virtual const CollectionData& fetch_island_heart() = 0;
+    virtual const CollectionData& fetch_ignea_token() = 0;
+    virtual const CollectionData& fetch_orpheus_star() = 0;
+    virtual const CollectionData& fetch_giants_heart() = 0;
+    virtual const CollectionData& fetch_masterpiece() = 0;
+    virtual const CollectionData& fetch_sea_bounties() = 0;
+    virtual const CollectionData& fetch_worldtree_leaf() = 0;
 };
 
 class LoaHomepageDataFetcher : public DataFetcher {
@@ -29,16 +29,16 @@ public:
     ~LoaHomepageDataFetcher();
 
 public:
-    const CharacterData& FetchCharacter() override;
-    const StatData& FetchStat() override;
-    const MokokoData& FetchMokoko() override;
-    const CollectionData& FetchIslandHeart() override;
-    const CollectionData& FetchIgneaToken() override;
-    const CollectionData& FetchOrpheusStar() override;
-    const CollectionData& FetchGiantHeart() override;
-    const CollectionData& FetchMasterpiece() override;
-    const CollectionData& FetchSeaBounties() override;
-    const CollectionData& FetchWorldTreeLeaf() override;
+    const CharacterData& fetch_character() override;
+    const StatData& fetch_stat() override;
+    const MokokoData& fetch_mokoko_seeds() override;
+    const CollectionData& fetch_island_heart() override;
+    const CollectionData& fetch_ignea_token() override;
+    const CollectionData& fetch_orpheus_star() override;
+    const CollectionData& fetch_giants_heart() override;
+    const CollectionData& fetch_masterpiece() override;
+    const CollectionData& fetch_sea_bounties() override;
+    const CollectionData& fetch_worldtree_leaf() override;
 
 private:
     struct Context;

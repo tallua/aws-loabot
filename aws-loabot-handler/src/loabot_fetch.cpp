@@ -35,6 +35,7 @@ namespace loabot::data::fetch {
 
 struct LoaHomepageDataFetcher::Context {
 
+CharacterData get_character();
 
 
 };
@@ -42,7 +43,7 @@ struct LoaHomepageDataFetcher::Context {
 LoaHomepageDataFetcher::LoaHomepageDataFetcher() = default;
 LoaHomepageDataFetcher::~LoaHomepageDataFetcher() = default;
 
-const CharacterData& LoaHomepageDataFetcher::FetchCharacter() {
+const CharacterData& LoaHomepageDataFetcher::fetch_character() {
     if (!character.has_value()) {
         //
     }
@@ -50,7 +51,7 @@ const CharacterData& LoaHomepageDataFetcher::FetchCharacter() {
     return character.value();
 }
 
-const StatData& LoaHomepageDataFetcher::FetchStat() {
+const StatData& LoaHomepageDataFetcher::fetch_stat() {
     if (!stat.has_value()) {
         //
     }
@@ -58,7 +59,7 @@ const StatData& LoaHomepageDataFetcher::FetchStat() {
     return stat.value();
 }
 
-const MokokoData& LoaHomepageDataFetcher::FetchMokoko() {
+const MokokoData& LoaHomepageDataFetcher::fetch_mokoko_seeds() {
     if (!mokoko.has_value()) {
         //
     }
