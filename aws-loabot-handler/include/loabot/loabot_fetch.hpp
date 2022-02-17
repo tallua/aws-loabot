@@ -41,12 +41,19 @@ public:
     const CollectionData& fetch_worldtree_leaf() override;
 
 private:
-    struct Context;
+    class Context;
     std::unique_ptr<Context> context;
 
     std::optional<CharacterData> character;
     std::optional<StatData> stat;
-    std::optional<MokokoData> mokoko;
+    std::optional<MokokoData> mokoko_seeds;
+    std::optional<CollectionData> island_heart;
+    std::optional<CollectionData> ignea_token;
+    std::optional<CollectionData> orpheus_star;
+    std::optional<CollectionData> giants_heart;
+    std::optional<CollectionData> masterpiece;
+    std::optional<CollectionData> sea_bounties;
+    std::optional<CollectionData> worldtree_leaf;
 };
 
 }  // namespace loabot::data::fetch

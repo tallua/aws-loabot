@@ -4,48 +4,36 @@
 
 namespace {
 
-std::string get_character_page(std::shared_ptr<HttpClient> http_client, const std::string& name)
-{
-    auto http_request = create_request({
-        "https://m-lostark.game.onstove.com/Profile/Character/" + name,
-        Aws::Http::HttpMethod::HTTP_GET,
-        {},
-        {},
-        {}
-    });
 
-    const auto http_response = http_client->MakeRequest(http_request);
-    const auto http_response_code = http_response->GetResponseCode();
-    if (http_response_code != HttpResponseCode::OK) {
-        LOG("Error: http status code(", int(http_response->GetResponseCode()), ")");
-        throw std::runtime_error("invalid response status code: " + std::to_string(int(http_response_code)));
-    }
+    
+}  // namespace
 
-    const auto http_response_body = [&]{
-        std::stringstream ss;
-        ss << http_response->GetResponseBody().rdbuf();
-        return ss.str();
-    }();
-    LOG("Response Code: (", int(http_response->GetResponseCode()), ") : Length: ", http_response_body.size());
-    return http_response_body;
-}
-
-}
 namespace loabot::data::fetch {
 
-struct LoaHomepageDataFetcher::Context {
+class LoaHomepageDataFetcher::Context {
+public:
+    Context(const std::string& name) : name(name) {}
 
-CharacterData get_character();
+public:
+    CharacterData get_character();
+    StatData get_stat();
+    MokokoData get_mokoko(const std::string& tab_id);
+    CollectionData get_collection(const std::string& tab_id);
 
-
+private:
+    std::string name;
+    std::optional<std::string> character_page;
+    std::optional<std::string> collection_page;
 };
 
-LoaHomepageDataFetcher::LoaHomepageDataFetcher() = default;
+LoaHomepageDataFetcher::LoaHomepageDataFetcher(const std::string& name)
+    : context(std::make_unique<Context>(name)) {}
+
 LoaHomepageDataFetcher::~LoaHomepageDataFetcher() = default;
 
 const CharacterData& LoaHomepageDataFetcher::fetch_character() {
     if (!character.has_value()) {
-        //
+        character = context->get_character();
     }
 
     return character.value();
@@ -53,18 +41,74 @@ const CharacterData& LoaHomepageDataFetcher::fetch_character() {
 
 const StatData& LoaHomepageDataFetcher::fetch_stat() {
     if (!stat.has_value()) {
-        //
+        stat = context->get_stat();
     }
 
     return stat.value();
 }
 
 const MokokoData& LoaHomepageDataFetcher::fetch_mokoko_seeds() {
-    if (!mokoko.has_value()) {
-        //
+    if (!mokoko_seeds.has_value()) {
+        mokoko_seeds = context->get_mokoko("lui-tab1-5");
     }
 
-    return mokoko.value();
+    return mokoko_seeds.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_island_heart() {
+    if (!island_heart.has_value()) {
+        island_heart = context->get_collection("lui-tab1-1");
+    }
+
+    return island_heart.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_ignea_token() {
+    if (!ignea_token.has_value()) {
+        ignea_token = context->get_collection("lui-tab1-7");
+    }
+
+    return ignea_token.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_orpheus_star() {
+    if (!orpheus_star.has_value()) {
+        orpheus_star = context->get_collection("lui-tab1-2");
+    }
+
+    return orpheus_star.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_giants_heart() {
+    if (!giants_heart.has_value()) {
+        giants_heart = context->get_collection("lui-tab1-3");
+    }
+
+    return giants_heart.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_masterpiece() {
+    if (!masterpiece.has_value()) {
+        masterpiece = context->get_collection("lui-tab1-4");
+    }
+
+    return masterpiece.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_sea_bounties() {
+    if (!sea_bounties.has_value()) {
+        sea_bounties = context->get_collection("lui-tab1-6");
+    }
+
+    return sea_bounties.value();
+}
+
+const CollectionData& LoaHomepageDataFetcher::fetch_worldtree_leaf() {
+    if (!worldtree_leaf.has_value()) {
+        worldtree_leaf = context->get_collection("lui-tab1-8");
+    }
+
+    return worldtree_leaf.value();
 }
 
 }  // namespace loabot::data::fetch
