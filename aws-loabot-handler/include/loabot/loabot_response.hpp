@@ -9,17 +9,14 @@ namespace loabot::response {
 using discord::message::Content;
 using discord::message::Embed;
 
-discord::message::Content format_character(data::CharacterData, data::StatData) {
-    // TODO
-    return {""};
-}
+discord::message::Embed format_character(const data::CharacterData&, const data::StatData&);
 discord::message::Content format_mokoko(data::MokokoData) {
     // TODO
-    return {""};
+    return {"아직 준비중이에요"};
 }
 discord::message::Content format_collection(data::CollectionData) {
     // TODO
-    return {""};
+    return {"아직 준비중이에요"};
 }
 
 }

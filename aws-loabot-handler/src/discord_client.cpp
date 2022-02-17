@@ -22,7 +22,6 @@ Aws::Utils::Json::JsonValue format(const discord::message::Embed& embed) {
     // clang-format off
     return JsonValue()
         .WithBool("tts", false)
-        .WithString("content", "")
         .WithArray("embeds", std::move(embeds))
         .WithObject("allowed_mentions", JsonValue()
             .WithArray("parse", Aws::Utils::Array<JsonValue>())

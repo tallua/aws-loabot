@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
     src/loabot_handler.cpp
     src/loabot_fetch.cpp
     src/loabot_discord.cpp
+    src/loabot_response.cpp
     src/discord_client.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ./include)
